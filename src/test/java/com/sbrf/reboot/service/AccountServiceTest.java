@@ -1,5 +1,6 @@
 package com.sbrf.reboot.service;
 
+import com.sbrf.reboot.AccountService;
 import com.sbrf.reboot.repository.AccountRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,35 @@ class AccountServiceTest {
 
         assertFalse(accountService.isClientHasContract(clientId, contractNumber));
     }
+
+    @Test
+    void contractAdd() {
+        Set<Long> accounts = new HashSet<>();
+        accounts.add(333L);
+
+        long clientId = 1L;
+        long newContractNumber = 444L;
+        boolean resultOfAddContractOperation = true;
+
+        when(accountRepository.addContractToClient(clientId, newContractNumber)).thenReturn(resultOfAddContractOperation);
+
+        assertTrue(accountService.addNewContract(clientId, newContractNumber));
+    }
+
+    @Test
+    void accountNotAdd() {
+        Set<Long> accounts = new HashSet<>();
+        accounts.add(333L);
+
+        long clientId = 1L;
+        long newContractNumber = 333L;
+        boolean resultOfAddContractOperation = false;
+
+        when(accountRepository.addContractToClient(clientId, newContractNumber)).thenReturn(resultOfAddContractOperation);
+
+        assertFalse(accountService.addNewContract(clientId, newContractNumber));
+    }
+
 
     @Test
     void repositoryHasTreeMethods() {
