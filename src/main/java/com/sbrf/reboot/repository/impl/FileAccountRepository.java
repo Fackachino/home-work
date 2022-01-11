@@ -64,7 +64,7 @@ public class FileAccountRepository implements AccountRepository {
 
     public Map<Long, HashSet<Long>> getClientIdsAndTheirNumbers(List<String> allNotes) {
         Map<Long, HashSet<Long>> mapNotes = new HashMap<>();
-        Pattern clientPattern = Pattern.compile("\"clientId\":\\s[0-9]+");
+        Pattern clientPattern = Pattern.compile("\"clientId\":\\s[0-9]+,");
         Pattern numberPattern = Pattern.compile("\"number\":\\s[0-9]+");
 
         for (String str : allNotes) {
@@ -72,7 +72,8 @@ public class FileAccountRepository implements AccountRepository {
             Matcher m1 = clientPattern.matcher(str);
             m1.find();
             resultStr = (m1.group().split(" "));
-            Long resultID = Long.parseLong(resultStr[1]);
+            String resultedStr = resultStr[1].substring(0, resultStr[1].length()-1);
+            Long resultID = Long.parseLong(resultedStr);
 
             Matcher m2 = numberPattern.matcher(str);
             m2.find();
@@ -84,7 +85,6 @@ public class FileAccountRepository implements AccountRepository {
             } else {
                 mapNotes.put(resultID, new HashSet<Long>(Collections.singleton(resultNumber)));
             }
-
         }
 
         return mapNotes;
