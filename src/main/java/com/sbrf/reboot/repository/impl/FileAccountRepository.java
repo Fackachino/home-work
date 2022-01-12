@@ -3,9 +3,7 @@ package com.sbrf.reboot.repository.impl;
 import com.sbrf.reboot.ClientNotFoundException;
 import com.sbrf.reboot.repository.AccountRepository;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -88,5 +86,53 @@ public class FileAccountRepository implements AccountRepository {
         }
 
         return mapNotes;
+    }
+
+    public void updateContractNumber(long clientID, long oldContractNumber, long newContractNumber){
+        List<String> allNotes = new ArrayList<>();
+        Pattern clientPattern = Pattern.compile("\"clientId\":\\s[0-9]+,");
+        Pattern numberPattern = Pattern.compile("\"number\":\\s[0-9]+");
+        StringBuffer stringBuffer = new StringBuffer();
+        FileInputStream fileInputStream = null;
+
+        try {
+            fileInputStream = new FileInputStream(pathToAccountsFile);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            int i = -1;
+            while ((i = fileInputStream.read()) != -1) {
+                stringBuffer.append((char) i);
+            }
+            fileInputStream.close();
+        } catch (NullPointerException | IOException e) {
+            e.printStackTrace();
+        }
+
+        Matcher clientM = clientPattern.matcher(stringBuffer);
+        Matcher numberM = numberPattern.matcher(stringBuffer);
+
+        while (clientM.find() && numberM.find()) {
+            String strID = stringBuffer.substring(clientM.start()+12,clientM.end()-1);
+            String strNumber = stringBuffer.substring(numberM.start()+10,numberM.end());
+            if(Long.parseLong(strID) == clientID && Long.parseLong(strNumber) == oldContractNumber){
+                stringBuffer.replace(numberM.start()+10, numberM.end(), Long.toString(newContractNumber));
+            }
+        }
+
+        System.out.println(stringBuffer);
+        BufferedWriter bwr = null;
+        try {
+            bwr = new BufferedWriter(new FileWriter(new File(pathToAccountsFile)));
+            bwr.write(stringBuffer.toString());
+            bwr.flush();
+            bwr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
