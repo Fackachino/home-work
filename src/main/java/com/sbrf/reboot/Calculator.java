@@ -6,7 +6,7 @@ public class Calculator {
     }
 
     public int getSubtraction(int x, int y) {
-        return 4 - 5;
+        return x - y;
     }
 
     public int getMultiplication(int x, int y) {
