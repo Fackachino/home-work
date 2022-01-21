@@ -2,8 +2,7 @@ package com.sbrf.reboot.collections;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,10 +28,11 @@ public class CollectionsTest {
      */
     @Test
     public void addStudentToRating() {
-
-        List<String> students = null;
-
-        //...
+        List<String> students = new LinkedList<>();
+        students.add("Иванов");
+        students.add("Петров");
+        students.add("Сидоров");
+        students.add(0,"Козлов");
 
         assertEquals(4, students.size());
     }
@@ -47,12 +47,14 @@ public class CollectionsTest {
      *
      * Проинициализируйте moneyBox, добавьте в нее 10 монет что бы тест завершился успешно.
      */
+
     @Test
     public void addMoneyToBox() {
-
-        Set<Integer> moneyBox = null;
-
-        //...
+        Set<Integer> moneyBox = new HashSet<>();
+        while(moneyBox.size() != 10){
+            int coin = new Random().nextInt(100);
+            moneyBox.add(coin);
+        }
 
         assertEquals(10, moneyBox.size());
     }
@@ -72,11 +74,31 @@ public class CollectionsTest {
         class Book {
         }
 
-        List<Book> bookshelf = null;
-
-        //...
+        List<Book> bookshelf = new ArrayList<>();
+        for(int i = 0; i < 3; i++) bookshelf.add(new Book());
 
         assertEquals(3, bookshelf.size());
+    }
+
+    /*
+     * Задача на 5+.
+     * У вас есть несколько тетрадей.
+     * Вы складываете их на столе в стопку.
+     *
+     * Вопрос.
+     * Какую коллекцию из реализаций интерфейса Collection вы предпочтете использовать для тетрадей в стопке.
+     *
+     * Проинициализируйте noteStack, добавьте 5 тетрадей, чтобы тест завершился успешно.
+     */
+    @Test
+    public void addNoteToStack() {
+        class Note {
+        }
+
+        List<Note> stack = new Stack<>();
+        for(int i = 0; i < 5; i++) stack.add(new Note());
+
+        assertEquals(5, stack.size());
     }
 
 
