@@ -5,10 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 
 public class EqualsHashCodeTest {
 
-     class Car {
+    class Car {
         String model;
         String color;
         Calendar releaseDate;
@@ -21,14 +22,33 @@ public class EqualsHashCodeTest {
             if (o == this)
                 return true;
 
-            return false;
+            //Проверка на null:
+            if (o == null)
+                return false;
+
+            //Проверка на класс:
+            if (o.getClass() != this.getClass())
+                return false;
+
+            //Проверка по полям
+            return this.maxSpeed == ((Car) o).maxSpeed
+                    && this.model.equals(((Car) o).model)
+                    && this.color.equals(((Car) o).color)
+                    && this.releaseDate.equals(((Car) o).releaseDate);
+
+
+        }
+
+        @Override
+        public int hashCode(){
+            return Objects.hash(model, color, releaseDate, maxSpeed);
         }
 
 
-     }
+    }
 
     @Test
-    public  void assertTrueEquals() {
+    public void assertTrueEquals() {
         Car car1 = new Car();
         car1.model = "Mercedes";
         car1.color = "black";
@@ -63,7 +83,7 @@ public class EqualsHashCodeTest {
     }
 
     @Test
-    public void successEqualsHashCode(){
+    public void successEqualsHashCode() {
         Car car1 = new Car();
         car1.model = "Mercedes";
         car1.color = "black";
@@ -76,12 +96,12 @@ public class EqualsHashCodeTest {
         car2.releaseDate = new GregorianCalendar(2020, 0, 25);
         car2.maxSpeed = 10;
 
-        Assertions.assertEquals(car1.hashCode(),car2.hashCode());
+        Assertions.assertEquals(car1.hashCode(), car2.hashCode());
 
     }
 
     @Test
-    public void failEqualsHashCode(){
+    public void failEqualsHashCode() {
         Car car1 = new Car();
         car1.model = "Mercedes";
         car1.color = "black";
@@ -94,7 +114,7 @@ public class EqualsHashCodeTest {
         car2.releaseDate = new GregorianCalendar(2017, 0, 25);
         car2.maxSpeed = 10;
 
-        Assertions.assertNotEquals(car1.hashCode(),car2.hashCode());
+        Assertions.assertNotEquals(car1.hashCode(), car2.hashCode());
 
     }
 
