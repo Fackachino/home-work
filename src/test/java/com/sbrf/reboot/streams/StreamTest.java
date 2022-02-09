@@ -107,9 +107,73 @@ public class StreamTest {
     }
 
     /*
-     *
-     *
-     *
+     * Получите изменненую коллекцию books
+     * Получить самую дорогую книгу от автора "Tom".
+     * Использовать Stream
      */
+    @Test
+    public void mostExpensiveBook() {
+        List<Book> books = Arrays.asList(
+                new Book("Trees", "Maria", new BigDecimal(900)),
+                new Book("Animals", "Tom", new BigDecimal(10000)),
+                new Book("Dogs", "Tom", new BigDecimal(9032)),
+                new Book("Space", "Tom", new BigDecimal(213)),
+                new Book("Fox", "Tom", new BigDecimal(500)),
+                new Book("Lions", "Tom", new BigDecimal(4384)),
+                new Book("Cars", "John", new BigDecimal(200)),
+                new Book("Birds", "Maria", new BigDecimal(100)),
+                new Book("Flowers", "Tom", new BigDecimal(700))
+
+        );
+
+        Book expectedBook = new Book("Animals", "Tom", new BigDecimal(10000));
+
+        Book actualBook = books.stream()
+                .filter(book -> book.author.equals("Tom"))
+                .max(Comparator.comparing(b -> b.price)).get();
+
+        assertEquals(expectedBook, actualBook);
+    }
+
+    /*
+     * Узнать, есть ли хоть 1 книга автора "Mark"
+     */
+    @Test
+    public void bookExist() {
+        List<Book> books = Arrays.asList(
+                new Book("Trees", "Maria", new BigDecimal(900)),
+                new Book("Animals", "Tom", new BigDecimal(10000)),
+                new Book("Dogs", "Tom", new BigDecimal(9032)),
+                new Book("Space", "Tom", new BigDecimal(213)),
+                new Book("Fox", "Tom", new BigDecimal(500))
+
+        );
+
+        boolean expectedResult = false;
+
+        boolean actualResult = books.stream().anyMatch(book -> book.author.equals("Mark"));
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    /*
+     * Посчитать стоимость всех книг.
+     */
+    @Test
+    public void priceSum(){
+        List<Book> books = Arrays.asList(
+                new Book("Trees", "Maria", new BigDecimal(100)),
+                new Book("Animals", "Tom", new BigDecimal(300)),
+                new Book("Dogs", "Tom", new BigDecimal(400)),
+                new Book("Space", "Tom", new BigDecimal(600))
+        );
+
+        BigDecimal expectedSum = new BigDecimal(1400);
+
+        BigDecimal actualSum = new BigDecimal(books.stream().mapToInt(book -> book.price.intValue()).sum());
+
+        assertEquals(expectedSum, actualSum);
+
+    }
 
 }
