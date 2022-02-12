@@ -1,6 +1,7 @@
 package com.sbrf.reboot.repository.impl;
 
 import com.sbrf.reboot.dto.Customer;
+import com.sbrf.reboot.dto.CustomerNotFoundException;
 import com.sbrf.reboot.repository.CustomerRepository;
 
 import java.sql.*;
@@ -61,19 +62,12 @@ public class CustomerH2Repository implements CustomerRepository {
 
     @Override
     public boolean createCustomer(String name, String eMail) {
-        String sql1 = "SELECT COUNT(*) FROM CUSTOMER WHERE NAME = ? AND EMAIL = ?";
-        String sql2 = "INSERT INTO CUSTOMER (NAME, EMAIL) VALUES (? , ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-        ) {
-            PreparedStatement smt = conn.prepareStatement(sql1);
+        String sql = "INSERT INTO CUSTOMER (NAME, EMAIL) VALUES (? , ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+            PreparedStatement smt = conn.prepareStatement(sql);
             smt.setString(1, name);
             smt.setString(2, eMail);
-            ResultSet rs = smt.executeQuery();
-            rs.next();
-            if (rs.getInt("COUNT(*)") == 0) {
-                smt = conn.prepareStatement(sql2);
-                smt.setString(1, name);
-                smt.setString(2, eMail);
+            if (!checkCustomerExists(name, eMail)) {
                 smt.execute();
                 return true;
             }
@@ -84,6 +78,64 @@ public class CustomerH2Repository implements CustomerRepository {
 
         return false;
     }
+
+    public boolean checkCustomerExists(String name, String eMail) {
+        String sql = "SELECT COUNT(*) FROM CUSTOMER WHERE NAME = ? AND EMAIL = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+            PreparedStatement smt = conn.prepareStatement(sql);
+            smt.setString(1, name);
+            smt.setString(2, eMail);
+            ResultSet rs = smt.executeQuery();
+            rs.next();
+            return rs.getInt("COUNT(*)") != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean changeCustomerEmail(Long id, String name, String eMail) {
+        String sql = "UPDATE CUSTOMER SET EMAIL = ? WHERE ID = ? AND NAME = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+            PreparedStatement smt = conn.prepareStatement(sql);
+            smt.setString(1, eMail);
+            smt.setLong(2, id);
+            smt.setString(3, name);
+            smt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Long getCustomerID(String name, String email) throws CustomerNotFoundException {
+        String sql = "SELECT ID FROM CUSTOMER WHERE NAME = ? AND EMAIL = ?";
+        boolean idExists = false;
+        Long customerID = 0l;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
+            PreparedStatement smt = conn.prepareStatement(sql);
+            smt.setString(1, name);
+            smt.setString(2, email);
+            ResultSet rs = smt.executeQuery();
+            if (rs.next()) {
+                idExists = true;
+                customerID = rs.getLong("ID");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if(idExists){
+            return customerID;
+        }
+        else throw new CustomerNotFoundException("Customer not found");
+    }
+
+
+
 }
 
 
