@@ -21,9 +21,7 @@ class CustomerH2RepositoryTest {
     @Test
     void getAll() {
         boolean tomCreated = customerRepository.createCustomer("Tom", "tom@ya.ru");
-
         List<Customer> all = customerRepository.getAll();
-
         assertTrue(all.size() != 0);
     }
 
