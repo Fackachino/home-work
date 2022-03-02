@@ -63,8 +63,8 @@ public class CustomerH2Repository implements CustomerRepository {
     @Override
     public boolean createCustomer(String name, String eMail) {
         String sql = "INSERT INTO CUSTOMER (NAME, EMAIL) VALUES (? , ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
-            PreparedStatement smt = conn.prepareStatement(sql);
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement smt = conn.prepareStatement(sql)) {
             smt.setString(1, name);
             smt.setString(2, eMail);
             if (!checkCustomerExists(name, eMail)) {
@@ -128,12 +128,10 @@ public class CustomerH2Repository implements CustomerRepository {
             e.printStackTrace();
         }
 
-        if(idExists){
+        if (idExists) {
             return customerID;
-        }
-        else throw new CustomerNotFoundException("Customer not found");
+        } else throw new CustomerNotFoundException("Customer not found");
     }
-
 
 
 }
